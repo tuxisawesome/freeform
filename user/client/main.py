@@ -9,7 +9,7 @@ time.sleep(2)
 # current module (__name__) as argument.
 app = Flask(__name__)
 
-softversion = 1.00
+softversion = 1.01
 
 
 @app.route('/')
@@ -57,8 +57,8 @@ def update_system():
         # Begin update process
         os.system("python3 ../update.py &")
         sys.exit(0)
-
-	return render_template('update.html')
+    else:
+        return render_template('cupdate-noupdate')
 
 @app.route('/settings/error')
 def error():
