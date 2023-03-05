@@ -1,13 +1,22 @@
 # Importing flask module in the project is mandatory
 # An object of Flask class is our WSGI application.
 from flask import Flask, render_template
+import requests
 
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
 
-softversion = "1.0.0"
 
+url = "https://raw.githubusercontent.com/tuxisawesome/freeform/main/release/versions.txt"
+
+req = requests.get(url)
+if req.status_code in [200]:
+    softversion = req.text
+else:
+    print('Could not retrieve: %s, err: %s - status code: %s' % (url, req.text, req.status_code))
+    softversion = "< Error retreving version >"
+print(softversion)
 @app.route('/')
 def home():
 	return render_template('index.html')
