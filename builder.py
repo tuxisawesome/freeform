@@ -3,5 +3,7 @@ import sys
 
 
 # Step 1: Zip the system
+system("zip -r client.zip client")
+
 # Step 2: Put in release folder
-# Step 3: Upload to Git
+system("mv client.zip ../release")
