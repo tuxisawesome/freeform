@@ -2,8 +2,9 @@
 # An object of Flask class is our WSGI application.
 from flask import Flask, render_template
 import requests
-import os
+import os, sys, time
 
+time.sleep(2)
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
@@ -33,7 +34,7 @@ def check_for_updates():
     else:
         return render_template('error.html')
 
-    if softversion < float(url):
+    if softversion < float(onlinev):
 	    return render_template('cupdate-isupdate.html', cversion=softversion,uversion=onlinev)
     else:
         return render_template('cupdate-noupdate.html', version=softversion)
@@ -43,7 +44,20 @@ def check_for_updates():
 
 @app.route('/settings/update')
 def update_system():
-    # TODO: update system
+    url = "https://raw.githubusercontent.com/tuxisawesome/freeform/main/release/versions.txt"
+
+    req = requests.get(url)
+
+    if req.status_code in [200]:
+        onlinev = float(req.text)
+    else:
+        return render_template('error.html')
+
+    if softversion < onlinev:
+        # Begin update process
+        os.system("python3 ../update.py &")
+        sys.exit(0)
+
 	return render_template('update.html')
 
 @app.route('/settings/error')
