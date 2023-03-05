@@ -9,12 +9,12 @@ time.sleep(2)
 # current module (__name__) as argument.
 app = Flask(__name__)
 
-softversion = 1.01
+softversion = 1.02
 
 
 @app.route('/')
 def home():
-	return render_template('index.html')
+	return render_template('index.html', version=softversion)
 
 
 @app.route('/settings')
@@ -55,10 +55,10 @@ def update_system():
 
     if softversion < onlinev:
         # Begin update process
-        os.system("python3 ../update.py &")
-        sys.exit(0)
+        os.system("python3 update.py &")
+        return render_template('update.html')
     else:
-        return render_template('cupdate-noupdate')
+        return render_template('cupdate-noupdate.html')
 
 @app.route('/settings/error')
 def error():
@@ -69,4 +69,4 @@ def error():
 if __name__ == '__main__':
 	# run() method of Flask class runs the application
 	# on the local development server.
-	app.run()
+	app.run(port=5001)
