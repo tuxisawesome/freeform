@@ -9,7 +9,7 @@ time.sleep(2)
 # current module (__name__) as argument.
 app = Flask(__name__)
 
-softversion = 1.03
+softversion = 1.1
 
 
 
@@ -30,13 +30,17 @@ def settings():
 # Check for updates
 def check_for_updates():
     url = "https://raw.githubusercontent.com/tuxisawesome/freeform/main/release/versions.txt"
-
-    req = requests.get(url)
-
+    try:
+        req = requests.get(url)
+    except:
+        print("Internal  - - Internet offline")
+        return render_template('internet-err.html', version=softversion)
     if req.status_code in [200]:
         onlinev = req.text
     else:
-        return render_template('error.html')
+        print("Internal  - - Internet offline")
+        return render_template('internet-err.html', version=softversion)
+        
 
     if softversion < float(onlinev):
 	    return render_template('cupdate-isupdate.html', cversion=softversion,uversion=onlinev)
@@ -50,12 +54,17 @@ def check_for_updates():
 def update_system():
     url = "https://raw.githubusercontent.com/tuxisawesome/freeform/main/release/versions.txt"
 
-    req = requests.get(url)
+    try:
+        req = requests.get(url)
+    except:
+        print("Internal  - - Internet offline")
+        return render_template('internet-err.html', version=softversion)
 
     if req.status_code in [200]:
         onlinev = float(req.text)
     else:
-        return render_template('error.html')
+        print("Internal  - - Internet offline")
+        return render_template('internet-err.html', version=softversion)
 
     if softversion < onlinev:
         # Begin update process
