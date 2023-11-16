@@ -1,15 +1,16 @@
 # Importing flask module in the project is mandatory
 # An object of Flask class is our WSGI application.
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 import requests
 import os, sys, time
+import subprocess
 
 time.sleep(2)
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
 
-softversion = 1.1
+softversion = 1.2
 
 
 
@@ -25,6 +26,21 @@ def home():
 def settings():
 	return render_template('settings.html')
 
+
+@app.route('/settings/sideload')
+def sideloadhtml():
+    return render_template('settings-sideload.html')
+
+@app.route('/settings/api/sideload', methods=['GET','POST'])  
+def sideload():
+    if request.method == "POST":
+        projectpath = request.form.get("textinput")
+        output = subprocess.run(["python3", "test.py", projectpath], capture_output=True, text=True)
+        output = output.stdout
+        output = output.replace('\\n', '\n').replace('\\t', '\t')
+        if output:
+            return render_template('settings-sideload.html',output=output)
+    return redirect('/settings/sideload')
 
 @app.route('/settings/cupdate')
 # Check for updates
@@ -43,7 +59,7 @@ def check_for_updates():
         
 
     if softversion < float(onlinev):
-	    return render_template('cupdate-isupdate.html', cversion=softversion,uversion=onlinev)
+        return render_template('cupdate-isupdate.html', cversion=softversion,uversion=onlinev)
     else:
         return render_template('cupdate-noupdate.html', version=softversion)
 
