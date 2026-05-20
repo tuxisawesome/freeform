@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "==== Make sure to run this in the "src" directory... ==="
+cd root
+python3 systemData/serve.py
