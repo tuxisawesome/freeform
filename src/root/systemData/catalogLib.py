@@ -1,24 +1,32 @@
-
 debug = True
 
+class Documents:
+    def __init__(self):
+        # Using self. guarantees unique lists for every instance
+        self.documentNames = []
+        self.documentDesc = []
+        self.documentIds = []
+
 class Catalog:
-    catalogName = ""
-    catalogDesc = ""
-    fileName = ""
-    class Documents:
-        documentNames = []
-        documentIds = []
-        documentDesc = []
+    def __init__(self):
+        self.catalogName = ""
+        self.catalogDesc = ""
+        self.fileName = ""
+        # Nesting the Documents object
+        self.Documents = Documents()
 
 
-def create_catalog(catalogName,catalogDesc,fileName):
+def create_catalog(catalogName, catalogDesc, fileName):
     with open(fileName + ".wpcs", "w") as ctlg:
-        ctlg.writelines([f"# WPCS Standardized Catalog System\n", f"${catalogName}```{catalogDesc}\n"])
-        ctlg.close()
+        ctlg.writelines([
+            "# WPCS Standardized Catalog System\n",
+            f"${catalogName}```{catalogDesc}\n"
+        ])
     return True
 
+
 def read_catalog(fileName):
-    catalog = Catalog
+    catalog = Catalog()  # FIX: call the class to create a fresh instance
     catalog.fileName = fileName
     with open(f"{fileName}.wpcs", "r") as ctlg:
         for line in ctlg.readlines():
@@ -36,26 +44,36 @@ def read_catalog(fileName):
                 catalog.Documents.documentDesc.append(x[2])
                 if debug:
                     print(f"*   Added {x[1]} to catalog")
-        ctlg.close()
     return catalog
 
 
-def write_catalog(catalog : Catalog, filename=None):
-    if filename == None: fn = catalog.fileName
-    else: fn = filename
+def write_catalog(catalog: Catalog, filename=None):
+    if filename is None:
+        fn = catalog.fileName
+    else:
+        fn = filename
 
-    if debug: print(f"Writing to {fn}")
+    if debug:
+        print(f"Writing to {fn}")
     with open(f"{fn}.wpcs", "w") as ctlg:
-        ctlg.writelines([f"# WPCS Standardized Catalog System\n", f"${catalog.catalogName}```{catalog.catalogDesc}\n"])
+        ctlg.writelines([
+            "# WPCS Standardized Catalog System\n",
+            f"${catalog.catalogName}```{catalog.catalogDesc}\n"
+        ])
         for docid in catalog.Documents.documentIds:
-            ctlg.write(f"%{docid}```{catalog.Documents.documentNames[catalog.Documents.documentIds.index(docid)]}```{catalog.Documents.documentDesc[catalog.Documents.documentIds.index(docid)]}\n")
-            if debug: print(f"*   Wrote {docid} to catalog")
-        ctlg.close()
+            idx = catalog.Documents.documentIds.index(docid)
+            ctlg.write(
+                f"%{docid}```{catalog.Documents.documentNames[idx]}"
+                f"```{catalog.Documents.documentDesc[idx]}\n"
+            )
+            if debug:
+                print(f"*   Wrote {docid} to catalog")
     return True
 
-def add_entry(catalog : Catalog, name, desc, id=None):
+
+def add_entry(catalog: Catalog, name, desc, id=None):
     nc = catalog
-    if id == None:
+    if id is None:
         if len(nc.Documents.documentIds) == 0:
             newId = "1"
         else:
@@ -67,10 +85,11 @@ def add_entry(catalog : Catalog, name, desc, id=None):
     nc.Documents.documentDesc.append(desc)
     return nc
 
+
 # read mode 1: Names
 # read mode 2: Id
 # read mode 3: Desc
-def remove_entry(catalog : Catalog, input, read_mode : int):
+def remove_entry(catalog: Catalog, input, read_mode: int):
     nc = catalog
     if read_mode == 2:
         targetid = int(input)
@@ -78,14 +97,16 @@ def remove_entry(catalog : Catalog, input, read_mode : int):
         targetid = int(nc.Documents.documentIds[nc.Documents.documentNames.index(input)])
     if read_mode == 3:
         targetid = int(nc.Documents.documentIds[nc.Documents.documentDesc.index(input)])
-    targetId = targetid    
+    targetId = targetid
     # Delete the entry
-    nc.Documents.documentDesc.pop(nc.Documents.documentIds.index(str(targetId)))
-    nc.Documents.documentNames.pop(nc.Documents.documentIds.index(str(targetId)))
-    nc.Documents.documentIds.pop(nc.Documents.documentIds.index(str(targetId)))
+    idx = nc.Documents.documentIds.index(str(targetId))
+    nc.Documents.documentDesc.pop(idx)
+    nc.Documents.documentNames.pop(idx)
+    nc.Documents.documentIds.pop(idx)
     return nc
 
-def get_entry(catalog : Catalog, input, read_mode : int):
+
+def get_entry(catalog: Catalog, input, read_mode: int):
     nc = catalog
     if read_mode == 2:
         targetid = int(input)
@@ -93,19 +114,22 @@ def get_entry(catalog : Catalog, input, read_mode : int):
         targetid = int(nc.Documents.documentIds[nc.Documents.documentNames.index(input)])
     if read_mode == 3:
         targetid = int(nc.Documents.documentIds[nc.Documents.documentDesc.index(input)])
-    targetId = targetid    
-    # Delete the entry
-    desc = nc.Documents.documentDesc[nc.Documents.documentIds.index(str(targetId))]
-    name = nc.Documents.documentNames[nc.Documents.documentIds.index(str(targetId))]
-    id = nc.Documents.documentIds[nc.Documents.documentIds.index(str(targetId))]
+    targetId = targetid
+    # Retrieve the entry
+    idx = nc.Documents.documentIds.index(str(targetId))
+    desc = nc.Documents.documentDesc[idx]
+    name = nc.Documents.documentNames[idx]
+    id = nc.Documents.documentIds[idx]
     return name, desc, id
 
-def change_name(catalog : Catalog, newName):
+
+def change_name(catalog: Catalog, newName):
     nc = catalog
     nc.catalogName = newName
     return nc
 
-def change_desc(catalog : Catalog, newDesc):
+
+def change_desc(catalog: Catalog, newDesc):
     nc = catalog
     nc.catalogDesc = newDesc
     return nc

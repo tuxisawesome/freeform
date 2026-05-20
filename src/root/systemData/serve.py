@@ -1,7 +1,11 @@
 # Initialization procedure
+
+py = "python3"
+
+
 from flask import Flask, render_template
 import catalogLib, updateLib
-import sys, requests
+import sys, requests, os
 
 def create_default_catalogs():
     catalogLib.create_catalog("Userprefs", "User preferences", "userData/configurationData/0000-userData")
@@ -24,8 +28,13 @@ def check_for_updates():
         newversion = updateLib.get_latest_version_number()
     except:
         return "An unknown error occured"
-    if current_version >= newversion: return render_template('system-softwareUpdate-updateCheck')
-    else: return render_template('system-softwareUpdate-updateCheck-available', version=newversion)
+    if current_version >= newversion: return render_template('system-softwareUpdate-updateCheck.html')
+    else: return render_template('system-softwareUpdate-updateCheck-available.html', version=newversion)
+
+@app.route("/settings/updatenow")
+def update_now():
+    os.system(f"{py} update.py &")
+    return render_template('system-softwareUpdate-updating.html')
 
 if __name__ == '__main__':
     app.run(debug=False)
