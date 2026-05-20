@@ -19,6 +19,7 @@ def main():
             for chunk in r.iter_content(chunk_size=8192): 
                 f.write(chunk)
     print("Starting stage 3...")
+    
     os.system("bash applyUpdate.sh &")
 if __name__ == "__main__":
     main()

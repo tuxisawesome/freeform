@@ -33,6 +33,10 @@ def check_for_updates():
 
 @app.route("/settings/updatenow")
 def update_now():
+    newversion = updateLib.get_latest_version_number()
+    catalogLib.remove_entry(systemCatalog, "version", 1)
+    catalogLib.add_entry(systemCatalog, "version", str(newversion))
+    catalogLib.write_catalog(systemCatalog, "userData/configurationData/0001-systemData")
     os.system(f"{py} update.py &")
     return render_template('system-softwareUpdate-updating.html')
 

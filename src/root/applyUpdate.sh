@@ -5,4 +5,6 @@ killall python3
 echo "Applying update now... stage 3"
 rm -rf systemData/*
 unzip updateFile.zip -d systemData
+rm -r updateFile.zip
+echo ""
 echo "Update applied..."
