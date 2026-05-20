@@ -28,8 +28,8 @@ def check_for_updates():
         newversion = updateLib.get_latest_version_number()
     except:
         return "An unknown error occured"
-    if current_version >= newversion: return render_template('system-softwareUpdate-updateCheck.html')
-    else: return render_template('system-softwareUpdate-updateCheck-available.html', version=newversion)
+    if current_version >= newversion: return render_template('system-softwareUpdate-updateCheck.html', oldversion=current_version)
+    else: return render_template('system-softwareUpdate-updateCheck-available.html', version=newversion, oldversion=current_version)
 
 @app.route("/settings/updatenow")
 def update_now():
@@ -39,6 +39,12 @@ def update_now():
     catalogLib.write_catalog(systemCatalog, "userData/configurationData/0001-systemData")
     os.system(f"{py} update.py &")
     return render_template('system-softwareUpdate-updating.html')
+
+@app.route("/settings/about")
+def about():
+    version = float(catalogLib.get_entry(systemCatalog, "version", 1)[1])
+    return render_template('system-about.html', version=version)
+
 
 if __name__ == '__main__':
     app.run(debug=False)

@@ -5,6 +5,7 @@
 
 {% block content %}
     <h3>New version available! v{{ version }}</h3>
+    <h3>Current version: v{{ oldversion }}</h3>
     <button type="button" class="btn btn-outline-primary" onclick="window.location.href = '/settings/updatenow'">Update now!</button>
 
 {% endblock %}
